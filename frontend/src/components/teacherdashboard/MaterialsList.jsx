@@ -1,6 +1,88 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-const MaterialsList = ({ materials, onGenerateQuiz }) => {
+const MaterialsList = ({ courseId, onGenerateQuiz }) => {
+  const [materials, setMaterials] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      if (!courseId) return;
+      
+      setIsLoading(true);
+      try {
+        const token = localStorage.getItem('access');
+        const response = await fetch(`http://localhost:8000/api/course/course/${courseId}/materials/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch materials');
+        }
+
+        const data = await response.json();
+        
+        // Transform the data to match your component's expected format
+        const transformedMaterials = data.map(material => ({
+          id: material.id,
+          title: material.attachment_name,
+          type: getFileType(material.attachment_file),
+          url: material.attachment_file,
+          uploadDate: new Date(material.attachment_date).toISOString().split('T')[0],
+          description: material.attachment_description,
+          week: material.weak ? material.weak.week_name : 'N/A'
+        }));
+        
+        setMaterials(transformedMaterials);
+      } catch (err) {
+        console.error('Error fetching materials:', err);
+        setError('Failed to load materials');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMaterials();
+  }, [courseId]);
+
+  // Helper function to determine file type based on extension
+  const getFileType = (fileUrl) => {
+    if (!fileUrl) return 'pdf'; // Default type
+    
+    const extension = fileUrl.split('.').pop().toLowerCase();
+    
+    if (['pdf'].includes(extension)) return 'pdf';
+    if (['ppt', 'pptx'].includes(extension)) return 'slides';
+    if (['mp4', 'webm', 'mov'].includes(extension)) return 'video';
+    if (['doc', 'docx', 'epub', 'txt'].includes(extension)) return 'book';
+    
+    return 'pdf'; // Default fallback
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-500">{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       {materials.map(material => (
@@ -29,7 +111,12 @@ const MaterialsList = ({ materials, onGenerateQuiz }) => {
           </div>
           <div className="flex-grow">
             <h4 className="font-medium">{material.title}</h4>
-            <p className="text-sm text-gray-500">Uploaded on {material.uploadDate} • {material.type}</p>
+            <p className="text-sm text-gray-500">
+              Uploaded on {material.uploadDate} • {material.type} • Week: {material.week}
+            </p>
+            {material.description && (
+              <p className="text-sm text-gray-600 mt-1">{material.description}</p>
+            )}
           </div>
           <div className="flex space-x-2">
             <button 
@@ -40,6 +127,8 @@ const MaterialsList = ({ materials, onGenerateQuiz }) => {
             </button>
             <a 
               href={material.url} 
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-md hover:bg-blue-100"
             >
               View

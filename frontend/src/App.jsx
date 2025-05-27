@@ -1,10 +1,7 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import TeacherLogin from "./components/TeacherLogin"
-import StudentLogin from './components/StudentLogin';
+import TeacherLogin from "./components/auth/TeacherLogin"
+import StudentLogin from './components/auth/StudentLogin';
 import TeacherDashboard from './components/teacherdashboard/TeacherDashboard';
 import CoursesList from './components/teacherdashboard/CoursesList';
 function App() {

@@ -74,6 +74,7 @@ const CourseDetails = ({ course, onBack, onAddMaterial, onGenerateQuiz }) => {
 
             {activeTab === 'materials' && (
               <MaterialsList 
+                courseId={course.id} 
                 materials={course.materials} 
                 onGenerateQuiz={handleGenerateQuiz}
               />
@@ -166,7 +167,8 @@ const CourseDetails = ({ course, onBack, onAddMaterial, onGenerateQuiz }) => {
       </div>
 
       {showUploadModal && (
-        <UploadMaterialModal 
+        <UploadMaterialModal
+          courseId={course.id} 
           onClose={() => setShowUploadModal(false)}
           onUpload={(material) => {
             onAddMaterial(material);

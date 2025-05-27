@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from authentication.models import TeacherTable
 from .models import Course
+from .models import Attachment
 class CourseRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
@@ -24,3 +25,24 @@ class CourseRegistrationSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return course_registration
+
+
+
+from rest_framework import serializers
+from .models import Attachment, TimeStamp, Course
+
+# serializers.py
+from rest_framework import serializers
+from .models import Attachment, TimeStamp, Course
+
+class TimeStampSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TimeStamp
+        fields = ['id', 'week_name']
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attachment
+        fields = ['id', 'course', 'weak', 'attachment_file', 'attachment_description', 
+                  'attachment_name', 'attachment_date']
+        read_only_fields = ['attachment_date']

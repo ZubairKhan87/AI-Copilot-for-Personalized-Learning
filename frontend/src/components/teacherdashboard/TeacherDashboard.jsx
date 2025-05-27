@@ -5,7 +5,6 @@ import AddCourseModal from './AddCourseModal';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const TeacherDashboard = () => {
-  // Sample data - in a real app, this would come from an API
   const [courses, setCourses] = useState([
     {
       id: 1,
@@ -80,7 +79,6 @@ const TeacherDashboard = () => {
   // Add new course
   const handleAddCourse = (newCourse) => {
     // The newCourse object is coming from the AddCourseModal with data from the API response
-    // It should already have an ID and the fields we need
     setCourses([...courses, newCourse]);
     setShowAddCourseModal(false);
   };
@@ -103,7 +101,7 @@ const TeacherDashboard = () => {
         });
         
         console.log("response from backend",response.data)
-        // Transform the backend data to match your frontend structure
+        // Transform the backend data to match  frontend structure
         const transformedCourses = response.data.map(course => ({
           id: course.id,
           title: course.course_name,
@@ -192,7 +190,9 @@ const TeacherDashboard = () => {
           />
         ) : (
           <CourseDetails 
-            course={selectedCourse} 
+            course={selectedCourse}
+            courseId={courses.id}
+ 
             onBack={() => setActivePage('dashboard')}
             onAddMaterial={(material) => handleAddMaterial(selectedCourse.id, material)}
             onGenerateQuiz={(materialId, quizTitle) => handleGenerateQuiz(selectedCourse.id, materialId, quizTitle)}

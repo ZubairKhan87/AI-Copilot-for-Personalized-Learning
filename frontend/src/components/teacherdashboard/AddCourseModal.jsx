@@ -109,6 +109,7 @@ const AddCourseModal = ({ onClose, onAddCourse }) => {
               rows="3"
               value={courseData.course_description}
               onChange={handleChange}
+              required
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             ></textarea>
           </div>
@@ -122,6 +123,7 @@ const AddCourseModal = ({ onClose, onAddCourse }) => {
                 name="course_start_date"
                 value={courseData.course_start_date}
                 onChange={handleChange}
+                required
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -133,6 +135,7 @@ const AddCourseModal = ({ onClose, onAddCourse }) => {
                 name="course_end_date"
                 value={courseData.course_end_date}
                 onChange={handleChange}
+                required
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
