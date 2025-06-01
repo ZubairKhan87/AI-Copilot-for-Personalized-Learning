@@ -39,6 +39,63 @@ class CourseRegistrationView(APIView):
     
 
 
+class CourseStatsDashboard(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Ensure the user is a teacher
+        try:
+            teacher = TeacherTable.objects.get(teacher=request.user)
+        except TeacherTable.DoesNotExist:
+            return Response({'detail': 'Teacher not found.'}, status=404)
+
+        # Retrieve courses taught by the teacher
+        courses = teacher.courses.all()
+        print("coursesss",courses)
+        # Prepare the response data
+        response_data = []
+
+        for course in courses:
+            print("course in loop",course)
+            # Get all students registered in the course
+            registrations = CourseRegistration.objects.filter(course=course).select_related('student')
+            print("registrations",registrations)
+            # Get all quizzes for the course
+            # Get all quizzes related to this course
+            attachments = Attachment.objects.filter(course=course).count()
+            course_quizzes = CourseQuiz.objects.filter(course=course)
+            print("course_quizzes",course_quizzes)
+            # Loop through each registration in the course
+            # for registration in registrations:
+                # student = registration.student
+                # print(student)
+                # Now fetch performances only for this course's quizzes
+            performances = StudentPerformance.objects.filter(
+                # student=student,
+                quiz__in=course_quizzes
+            )
+            print(performances)
+            avg_score = performances.aggregate(avg=Avg('quiz_score'))['avg'] or 0.0
+            quizzes_taken = performances.count()
+            last_active = performances.aggregate(last=Max('quiz__quiz_date'))['last']
+
+            progress = (quizzes_taken / course_quizzes.count()) * 100 if course_quizzes.count() > 0 else 0.0
+
+            response_data.append({
+                'course_id': course.id,
+                'course_name': course.course_name,
+                'progress': round(progress, 2),
+                'avgScore': round(avg_score, 2),
+                "registrations": registrations.count(),
+                "course_quizzes": quizzes_taken,
+                "attachments": attachments
+
+
+            })
+        
+        print("responsE",response_data)
+        return Response(response_data, status=200)
+
 
 # views.py
 from rest_framework import status

@@ -156,7 +156,7 @@ const CourseDetails = ({ course,courseId, onBack, onAddMaterial, onGenerateQuiz 
               </p>
               <p className="text-sm text-gray-700">
                 Consider creating additional materials on {
-                  course.quizzes.length > 0 
+                  course.quizzes > 0 
                     ? `topics related to "${course.quizzes.sort((a, b) => a.avgScore - b.avgScore)[0].title}"` 
                     : 'foundational concepts'
                 } as students seem to need more support in this area.
@@ -170,7 +170,7 @@ const CourseDetails = ({ course,courseId, onBack, onAddMaterial, onGenerateQuiz 
                   <p className="text-sm font-medium mb-1">Content Recommendation:</p>
                   <p className="text-sm">
                     Based on quiz results, students need more examples on {
-                      course.quizzes.length > 0 
+                      course.quizzes > 0 
                         ? course.quizzes.sort((a, b) => a.avgScore - b.avgScore)[0].title.split(':')[0]
                         : 'fundamental concepts'
                     }.
@@ -179,9 +179,9 @@ const CourseDetails = ({ course,courseId, onBack, onAddMaterial, onGenerateQuiz 
                 <div className="p-3 bg-white rounded-lg border border-gray-200">
                   <p className="text-sm font-medium mb-1">Engagement Insight:</p>
                   <p className="text-sm">
-                    {course.studentPerformance.length > 0 
+                    {course.studentPerformance > 0 
                       ? `${course.studentPerformance.filter(s => s.progress < 50).length} students` 
-                      : 'Some students'} 
+                      : 'Some students '} 
                     are falling behind. Consider scheduling a review session.
                   </p>
                 </div>
