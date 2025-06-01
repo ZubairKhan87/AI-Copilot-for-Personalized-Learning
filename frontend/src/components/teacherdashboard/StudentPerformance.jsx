@@ -1,8 +1,34 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
-const StudentPerformance = ({ students }) => {
+const StudentPerformance = ({ courseId }) => {
   const [sortBy, setSortBy] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [studentPerformance, setStudentPerformance] = useState([]);
+  console.log("courseId",courseId)
+  useEffect(() => {
+    const fetchStudentPerformance = async () => {
+      try {
+        const accessToken = localStorage.getItem('access');
+        if (!accessToken) {
+          console.error('Authentication token not found');
+          return;
+        }
+
+        const response = await axios.get(`http://localhost:8000/api/course/student-performance/${courseId}`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        });
+
+        setStudentPerformance(response.data);
+      } catch (err) {
+        console.error('Error fetching student performance:', err);
+      }
+    };
+
+    fetchStudentPerformance();
+  }, []);
 
   const handleSort = (field) => {
     if (sortBy === field) {
@@ -13,7 +39,7 @@ const StudentPerformance = ({ students }) => {
     }
   };
 
-  const sortedStudents = [...students].sort((a, b) => {
+  const sortedStudents = [...studentPerformance].sort((a, b) => {
     if (sortBy === 'name') {
       return sortDirection === 'asc' 
         ? a.name.localeCompare(b.name) 
@@ -24,6 +50,8 @@ const StudentPerformance = ({ students }) => {
         : b[sortBy] - a[sortBy];
     }
   });
+
+  console.log("student performance",studentPerformance)
 
   return (
     <div>
@@ -78,7 +106,7 @@ const StudentPerformance = ({ students }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {sortedStudents.map((student, index) => (
+            {studentPerformance.map((student, index) => (
               <tr key={index} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{student.name}</div>
@@ -127,7 +155,7 @@ const StudentPerformance = ({ students }) => {
         </table>
       </div>
       
-      {students.length === 0 && (
+      {studentPerformance.length === 0 && (
         <div className="text-center py-8">
           <p className="text-gray-500">No student data available.</p>
         </div>

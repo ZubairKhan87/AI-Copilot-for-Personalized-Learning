@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # One-to-One relationship with User model
     is_teacher = models.BooleanField(default=False)  # Custom field to mark if the user is a recruiter
@@ -12,8 +11,14 @@ class StudentTable(models.Model):
     student = models.OneToOneField(
         User, 
         on_delete=models.CASCADE, 
-        limit_choices_to={"userprofile__is_teacher": False},  # Exclude recruiters
-    )  # Link only to users who are not recruiters
+        limit_choices_to={"userprofile__is_teacher": False},  
+    )
+    # registration = models.ForeignKey(CourseRegistration) 
+    student_name = models.CharField(max_length=100, blank=True, null=True)  # Optional field for student name
+    student_email = models.EmailField(blank=True, null=True)  # Optional field for student email
+    student_gpa = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)  # Optional field for student GPA
+    student_department = models.CharField(max_length=100, blank=True, null=True)  # Optional field for student department
+
     def __str__(self):
         return self.student.username
 

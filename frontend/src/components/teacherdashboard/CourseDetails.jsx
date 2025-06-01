@@ -1,20 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MaterialsList from './MaterialsList';
 import QuizList from './QuizList';
 import StudentPerformance from './StudentPerformance';
 import UploadMaterialModal from './UploadMaterialModal';
 import GenerateQuizModal from './GenerateQuizModal';
-
-const CourseDetails = ({ course, onBack, onAddMaterial, onGenerateQuiz }) => {
+import axios from 'axios';
+const CourseDetails = ({ course,courseId, onBack, onAddMaterial, onGenerateQuiz }) => {
   const [activeTab, setActiveTab] = useState('materials');
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showGenerateQuizModal, setShowGenerateQuizModal] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
-
+  const [stats, setStats] = useState([]);
+  console.log("id is ",course.id)
   const handleGenerateQuiz = (materialId) => {
     setSelectedMaterial(materialId);
     setShowGenerateQuizModal(true);
   };
+
+  const accessToken = localStorage.getItem("access");  
+    useEffect(() => {
+      const fetchCourseStats = async () => {
+        try {
+          const response = await axios.get(`http://localhost:8000/api/course/${course.id}/stats/`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          setStats(response.data);
+          console.log("Course Stats:", response.data);
+        } catch (error) {
+          console.error("Failed to fetch course stats:", error);
+        }
+      };
+
+      fetchCourseStats();
+    }, [course.id]); 
+
+    console.log("course stats :", stats);
+
+
 
   const tabStyle = (tabName) => `px-4 py-2 font-medium ${
     activeTab === tabName 
@@ -22,6 +46,7 @@ const CourseDetails = ({ course, onBack, onAddMaterial, onGenerateQuiz }) => {
       : 'text-gray-500 hover:text-gray-700'
   }`;
 
+  console.log("performance :",course.id)
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="p-6">
@@ -81,11 +106,11 @@ const CourseDetails = ({ course, onBack, onAddMaterial, onGenerateQuiz }) => {
             )}
             
             {activeTab === 'quizzes' && (
-              <QuizList quizzes={course.quizzes} />
+              <QuizList courseId={course.id} />
             )}
             
             {activeTab === 'students' && (
-              <StudentPerformance students={course.studentPerformance} />
+              <StudentPerformance courseId={course.id} />
             )}
           </div>
           
@@ -95,31 +120,31 @@ const CourseDetails = ({ course, onBack, onAddMaterial, onGenerateQuiz }) => {
               <div className="mb-4">
                 <div className="flex justify-between mb-1">
                   <span className="text-sm font-medium">Average Progress</span>
-                  <span className="text-sm font-medium">{course.averageProgress}%</span>
+                  <span className="text-sm font-medium">{stats.average_quiz_score}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full" 
-                    style={{ width: `${course.averageProgress}%` }}
+                    style={{ width: `${stats.average_quiz_score}%` }}
                   ></div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <span className="text-sm font-medium block">Students</span>
-                  <span className="text-lg font-bold">{course.students}</span>
+                  <span className="text-lg font-bold">{stats.total_students}</span>
                 </div>
                 <div>
                   <span className="text-sm font-medium block">Materials</span>
-                  <span className="text-lg font-bold">{course.materials.length}</span>
+                  <span className="text-lg font-bold">{stats.total_materials}</span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium block">Quizzes</span>
-                  <span className="text-lg font-bold">{course.quizzes.length}</span>
+                  <span className="text-sm font-medium block">Attempted Quizzes</span>
+                  <span className="text-lg font-bold">{stats.total_quiz_attempts}</span>
                 </div>
                 <div>
                   <span className="text-sm font-medium block">Avg. Score</span>
-                  <span className="text-lg font-bold">{course.averageScore}</span>
+                  <span className="text-lg font-bold">{stats.average_quiz_score || 0}</span>
                 </div>
               </div>
             </div>

@@ -59,10 +59,7 @@ const TeacherDashboard = () => {
         { id: 1, title: "SQL Fundamentals", type: "pdf", url: "#", uploadDate: "2025-03-18" },
         { id: 2, title: "Database Design Principles", type: "slides", url: "#", uploadDate: "2025-03-25" }
       ],
-      quizzes: [
-        { id: 1, title: "SQL Basics Quiz", avgScore: 73, submissionRate: 82, generatedFrom: "SQL Fundamentals" },
-        { id: 2, title: "Normalization Forms", avgScore: 68, submissionRate: 55, generatedFrom: "Database Design Principles" }
-      ],
+      
       studentPerformance: [
         { name: "Ryan Johnson", progress: 30, avgScore: 75, quizzesTaken: 1, lastActive: "2025-04-10" },
         { name: "Emma Williams", progress: 20, avgScore: 65, quizzesTaken: 1, lastActive: "2025-04-07" },
@@ -83,48 +80,7 @@ const TeacherDashboard = () => {
     setShowAddCourseModal(false);
   };
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const accessToken = localStorage.getItem('access');
-        console.log("access token at teacher dashboard ",accessToken)
-        if (!accessToken) {
-          console.error('Authentication token not found');
-          // Consider redirecting to login here
-          return;
-        }
-        
-        const response = await axios.get('http://localhost:8000/api/course/course_registration/', {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          }
-        });
-        
-        console.log("response from backend",response.data)
-        // Transform the backend data to match  frontend structure
-        const transformedCourses = response.data.map(course => ({
-          id: course.id,
-          title: course.course_name,
-          description: course.course_description,
-          startDate: course.course_start_date,
-          endDate: course.course_end_date,
-          students: 0,
-          averageProgress: 0,
-          averageScore: 0,
-          materials: [],
-          quizzes: [],
-          studentPerformance: []
-        }));
-        
-        setCourses(transformedCourses);
-      } catch (err) {
-        console.error('Error fetching courses:', err);
-        // Handle error appropriately - maybe show a notification
-      }
-    };
-    
-    fetchCourses();
-  }, []);
+  
   // Add material to course
   const handleAddMaterial = (courseId, material) => {
     setCourses(courses.map(course => {
@@ -190,9 +146,7 @@ const TeacherDashboard = () => {
           />
         ) : (
           <CourseDetails 
-            course={selectedCourse}
-            courseId={courses.id}
- 
+            course={selectedCourse} 
             onBack={() => setActivePage('dashboard')}
             onAddMaterial={(material) => handleAddMaterial(selectedCourse.id, material)}
             onGenerateQuiz={(materialId, quizTitle) => handleGenerateQuiz(selectedCourse.id, materialId, quizTitle)}

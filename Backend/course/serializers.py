@@ -1,13 +1,27 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from authentication.models import TeacherTable
-from .models import Course
+from .models import Course,CourseRegistration,CourseQuiz,Attachment
 from .models import Attachment
 class CourseRegistrationSerializer(serializers.ModelSerializer):
+    student_count = serializers.SerializerMethodField()
+    no_of_quizzes = serializers.SerializerMethodField()
+    uploaded_materials = serializers.SerializerMethodField()
     class Meta:
         model = Course
-        fields = ['id', 'course_name', 'course_description', 'course_start_date', 'course_end_date']
+        fields = ['id', 'course_name', 'course_description', 'course_start_date', 'course_end_date',"student_count","uploaded_materials","no_of_quizzes"]
         read_only_fields = ['teacher']
+
+    def get_student_count(self, obj):
+        return CourseRegistration.objects.filter(course=obj).count()
+    
+    
+    def get_no_of_quizzes(self, obj):
+        return CourseQuiz.objects.filter(course=obj).count()
+    
+    def get_uploaded_materials(self, obj):
+        return Attachment.objects.filter(course=obj).count()
+    
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -46,3 +60,14 @@ class AttachmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'course', 'weak', 'attachment_file', 'attachment_description', 
                   'attachment_name', 'attachment_date']
         read_only_fields = ['attachment_date']
+
+
+
+from rest_framework import serializers
+
+class StudentPerformanceSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    progress = serializers.FloatField()
+    avgScore = serializers.FloatField()
+    quizzesTaken = serializers.IntegerField()
+    lastActive = serializers.DateField(allow_null=True)
