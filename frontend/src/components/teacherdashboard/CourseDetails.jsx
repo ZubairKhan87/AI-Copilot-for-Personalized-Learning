@@ -51,13 +51,21 @@ const CourseDetails = ({ course,courseId, onBack, onAddMaterial, onGenerateQuiz 
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">{course.title}</h2>
           <button
             onClick={onBack}
-            className="cursor-pointer py-2 px-4 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
+            className="cursor-pointer py-2 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 self-start"
           >
             Back to Dashboard
           </button>
+            
+            <h2 className="text-2xl font-bold">{course.course_name}</h2>
+
+          <button
+            className="cursor-pointer py-2 px-4 bg-green-600 text-white font-medium rounded-lg hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 self-start"
+          >
+            Add Student
+          </button>
+
         </div>
 
         <div className="flex flex-col md:flex-row gap-6">
