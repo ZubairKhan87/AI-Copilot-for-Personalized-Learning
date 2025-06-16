@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+GROQ_API_KEY = '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'
 # Application definition
 
 INSTALLED_APPS = [
@@ -174,3 +174,9 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',), 
 }
+
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DEBUG = True

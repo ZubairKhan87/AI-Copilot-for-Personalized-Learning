@@ -1,8 +1,20 @@
+#serializers.py
+
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from authentication.models import TeacherTable
 from .models import Course,CourseRegistration,CourseQuiz,Attachment
 from .models import Attachment
+
+# At the top of serializers.py
+from .models import CourseQuiz
+
+class CourseQuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseQuiz
+        fields = '__all__'
+
+
 class CourseRegistrationSerializer(serializers.ModelSerializer):
     student_count = serializers.SerializerMethodField()
     no_of_quizzes = serializers.SerializerMethodField()
@@ -71,3 +83,20 @@ class StudentPerformanceSerializer(serializers.Serializer):
     avgScore = serializers.FloatField()
     quizzesTaken = serializers.IntegerField()
     lastActive = serializers.DateField(allow_null=True)
+
+
+# from rest_framework import serializers
+from .models import Course
+from authentication.models import TeacherTable
+
+class TeacherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherTable
+        fields = ['id', 'teacher_name']
+
+class CourseSerializer(serializers.ModelSerializer):
+    teacher = TeacherSerializer(read_only=True)
+    
+    class Meta:
+        model = Course
+        fields = ['id', 'course_name', 'course_description', 'course_start_date', 'course_end_date', 'teacher']
